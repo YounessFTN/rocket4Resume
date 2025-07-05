@@ -13,14 +13,14 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 export default function Page() {
   const [rowData, setRowData] = useState<any[]>([]);
 
-  const [columnDefs, setColumnDefs] = useState<ColDef[]>([
+  const columnDefs: ColDef[] = [
     { field: "candidat" },
     { field: "score" },
     { field: "date" },
     { field: "email" },
     { field: "phone" },
     { field: "final_decision" },
-  ]);
+  ];
 
   const [datas, setDatas] = useState([]);
 
@@ -113,29 +113,29 @@ async function getData() {
   }
 }
 
-async function formatCardData() {
-  const data = await getData();
-  return [
-    {
-      title: "Total CV",
-      number: data.length,
-      tag: +34,
-      description_tag: "string",
-      description: "de",
-    },
-    {
-      title: "Total accepted",
-      number: 23,
-      tag: +34,
-      description_tag: "string",
-      description: "de",
-    },
-    {
-      title: "Total CV",
-      number: 23,
-      tag: +34,
-      description_tag: "string",
-      description: "de",
-    },
-  ];
-}
+// async function formatCardData() {
+//   const data = await getData();
+//   return [
+//     {
+//       title: "Total CV",
+//       number: data.length,
+//       tag: +34,
+//       description_tag: "string",
+//       description: "de",
+//     },
+//     {
+//       title: "Total accepted",
+//       number: 23,
+//       tag: +34,
+//       description_tag: "string",
+//       description: "de",
+//     },
+//     {
+//       title: "Total CV",
+//       number: 23,
+//       tag: +34,
+//       description_tag: "string",
+//       description: "de",
+//     },
+//   ];
+// }

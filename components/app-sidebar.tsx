@@ -16,6 +16,7 @@ import {
   IconSettings,
   IconUsers,
 } from "@tabler/icons-react";
+import Image from "next/image";
 import * as React from "react";
 
 import { NavDocuments } from "@/components/nav-documents";
@@ -31,6 +32,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import Link from "next/link";
 
 const data = {
   user: {
@@ -160,14 +162,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
-                <img
+              <Link href="/#">
+                <Image
                   src="/rocket-icon.svg"
                   alt="Rocket Icon"
+                  width={16}
+                  height={16}
                   className="w-4 h-4"
                 />
                 <span className="text-base font-semibold">Rocket4Resume</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
