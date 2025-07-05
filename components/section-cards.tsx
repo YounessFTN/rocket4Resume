@@ -9,32 +9,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-export function SectionCards() {
-  const cards = [
-    {
-      title: "Total CV",
-      number: 23,
-      tag: +34,
-      description_tag: "string",
-      description: "de",
-    },
-    {
-      title: "Total CV",
-      number: 23,
-      tag: +34,
-      description_tag: "string",
-      description: "de",
-    },
-    {
-      title: "Total CV",
-      number: 23,
-      tag: +34,
-      description_tag: "string",
-      description: "de",
-    },
-  ];
-
+type Card = {
+  title: string;
+  number: number;
+  tag: number;
+  description_tag: string;
+  description: string;
+};
+export function SectionCards({ cards }: { cards: Card[] }) {
   const getTagIcon = (tag: number) => {
     if (tag > 0) return <IconTrendingUp className="size-4" />;
     if (tag < 0) return <IconTrendingDown className="size-4" />;

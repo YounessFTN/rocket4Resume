@@ -9,6 +9,7 @@ import { AgGridReact } from "ag-grid-react";
 import { useEffect, useState } from "react";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 interface CandidateData {
   candidat: string;
@@ -28,14 +29,25 @@ export default function Page() {
     { field: "phone" },
     { field: "final_decision" },
   ];
+  type Card = {
+    title: string;
+    number: number;
+    tag: number;
+    description_tag: string;
+    description: string;
+  };
 
   const [datas, setDatas] = useState<CandidateData[]>([]);
+  const [cards, setCards] = useState<Card[]>([]);
 
   useEffect(() => {
     const fetchToken = async () => {
       const datas = await getData();
       setDatas(datas);
     };
+    formatCardData().then((data) => {
+      setCards(data);
+    });
 
     fetchToken();
   }, []);
@@ -48,7 +60,7 @@ export default function Page() {
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <SectionCards />
+              <SectionCards cards={cards} />
               <div className="w-full h-[35vw] max-h-[600px] flex items-center justify-center overflow-auto px-6 sm:h-[500px] md:h-[600px] lg:h-[700px]">
                 <div className="w-full h-full">
                   <AgGridReact
@@ -82,7 +94,7 @@ async function getToken() {
       password: "stagestage",
     }),
   };
-  const url: string = "http://13.37.241.212:3000/token";
+  const url: string = API_BASE_URL + "token";
   try {
     const rep: Response = await fetch(url, params);
 
@@ -105,7 +117,8 @@ async function getData() {
     },
   };
   const url: string =
-    "http://13.37.241.212:3000/cv_analyzer_2?deal_id=1&accepted=false&all=false&archived=true";
+    API_BASE_URL +
+    "cv_analyzer_2?deal_id=1&accepted=false&all=false&archived=true";
   try {
     const rep: Response = await fetch(url, params);
 
@@ -119,31 +132,96 @@ async function getData() {
     throw new Error("catch error getData" + error);
   }
 }
+interface Candidat {
+  id: number;
+  candidat: string;
+  final_decision: string;
+  date: string;
+  campaign_name: string;
+}
 
-// Fonction supprimée car non utilisée
-// async function formatCardData() {
-//   const data = await getData();
-//   return [
-//     {
-//       title: "Total CV",
-//       number: data.length,
-//       tag: +34,
-//       description_tag: "string",
-//       description: "de",
-//     },
-//     {
-//       title: "Total accepted",
-//       number: 23,
-//       tag: +34,
-//       description_tag: "string",
-//       description: "de",
-//     },
-//     {
-//       title: "Total CV",
-//       number: 23,
-//       tag: +34,
-//       description_tag: "string",
-//       description: "de",
-//     },
-//   ];
-// }
+async function formatCardData() {
+  const data: Candidat[] = await getData();
+
+  // Calculer les totaux par décision
+  const totalAccepted = data.filter(
+    (item: Candidat) => item.final_decision === "Green"
+  ).length;
+  const totalPending = data.filter(
+    (item: Candidat) => item.final_decision === "Yellow"
+  ).length;
+
+  // Obtenir les deux dernières dates uniques
+  const uniqueDates = [
+    ...new Set(data.map((item: Candidat) => item.date)),
+  ].sort();
+  const lastDate = uniqueDates[uniqueDates.length - 1];
+  const secondLastDate = uniqueDates[uniqueDates.length - 2];
+
+  // Calculer les taux d'augmentation
+  const calculateGrowthRate = (
+    currentCount: number,
+    previousCount: number
+  ): number => {
+    if (previousCount === 0) return currentCount > 0 ? 100 : 0;
+    return Math.round(((currentCount - previousCount) / previousCount) * 100);
+  };
+
+  // Données pour la dernière date
+  const lastDateData = data.filter((item: Candidat) => item.date === lastDate);
+  const secondLastDateData = data.filter(
+    (item: Candidat) => item.date === secondLastDate
+  );
+
+  // Calculs des taux d'augmentation
+  const totalCvGrowth = calculateGrowthRate(
+    lastDateData.length,
+    secondLastDateData.length
+  );
+
+  const lastDateAccepted = lastDateData.filter(
+    (item: Candidat) => item.final_decision === "Green"
+  ).length;
+  const secondLastDateAccepted = secondLastDateData.filter(
+    (item: Candidat) => item.final_decision === "Green"
+  ).length;
+  const acceptedGrowth = calculateGrowthRate(
+    lastDateAccepted,
+    secondLastDateAccepted
+  );
+
+  const lastDatePending = lastDateData.filter(
+    (item: Candidat) => item.final_decision === "Yellow"
+  ).length;
+  const secondLastDatePending = secondLastDateData.filter(
+    (item: Candidat) => item.final_decision === "Yellow"
+  ).length;
+  const pendingGrowth = calculateGrowthRate(
+    lastDatePending,
+    secondLastDatePending
+  );
+
+  return [
+    {
+      title: "Total CV",
+      number: data.length,
+      tag: totalCvGrowth,
+      description_tag: `Évolution depuis ${secondLastDate}`,
+      description: "CV analysés au total",
+    },
+    {
+      title: "Total Accepted",
+      number: totalAccepted,
+      tag: acceptedGrowth,
+      description_tag: `Évolution depuis ${secondLastDate}`,
+      description: "CV acceptés (Green)",
+    },
+    {
+      title: "Total Pending",
+      number: totalPending,
+      tag: pendingGrowth,
+      description_tag: `Évolution depuis ${secondLastDate}`,
+      description: "CV en attente (Yellow)",
+    },
+  ];
+}
