@@ -7,6 +7,7 @@ import type { ColDef } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { useEffect, useState } from "react";
+
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 export default function Page() {
@@ -22,6 +23,7 @@ export default function Page() {
   ]);
 
   const [datas, setDatas] = useState([]);
+
   useEffect(() => {
     const fetchToken = async () => {
       const datas = await getData();
@@ -44,11 +46,11 @@ export default function Page() {
                 <div className="w-full h-full">
                   <AgGridReact
                     className="w-full h-full"
-                    rowData={datas} // Ou utilisez 'datas' selon vos besoins
+                    rowData={datas}
                     columnDefs={columnDefs}
                     pagination={true}
                     paginationPageSize={12}
-                    paginationPageSizeSelector={[12, 20, 50, 100]} // CORRECTION : Ajout du sélecteur
+                    paginationPageSizeSelector={[12, 20, 50, 100]}
                     domLayout="normal"
                   />
                 </div>
@@ -62,7 +64,7 @@ export default function Page() {
 }
 
 async function getToken() {
-  let params: RequestInit = {
+  const params: RequestInit = {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -73,7 +75,7 @@ async function getToken() {
       password: "stagestage",
     }),
   };
-  let url: string = "http://13.37.241.212:3000/token";
+  const url: string = "http://13.37.241.212:3000/token";
   try {
     const rep: Response = await fetch(url, params);
 
@@ -89,13 +91,13 @@ async function getToken() {
 async function getData() {
   const token = await getToken();
 
-  let params = {
+  const params = {
     method: "GET",
     headers: {
       Authorization: "Bearer " + token["access_token"],
     },
   };
-  let url: string =
+  const url: string =
     "http://13.37.241.212:3000/cv_analyzer_2?deal_id=1&accepted=false&all=false&archived=true";
   try {
     const rep: Response = await fetch(url, params);
@@ -116,13 +118,13 @@ async function formatCardData() {
   return [
     {
       title: "Total CV",
-      number: data.lentch,
+      number: data.length,
       tag: +34,
       description_tag: "string",
       description: "de",
     },
     {
-      title: "Total accpeted",
+      title: "Total accepted",
       number: 23,
       tag: +34,
       description_tag: "string",
