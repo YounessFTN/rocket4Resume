@@ -10,9 +10,16 @@ import { useEffect, useState } from "react";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-export default function Page() {
-  const [rowData, setRowData] = useState<any[]>([]);
+interface CandidateData {
+  candidat: string;
+  score: number;
+  date: string;
+  email: string;
+  phone: string;
+  final_decision: string;
+}
 
+export default function Page() {
   const columnDefs: ColDef[] = [
     { field: "candidat" },
     { field: "score" },
@@ -22,7 +29,7 @@ export default function Page() {
     { field: "final_decision" },
   ];
 
-  const [datas, setDatas] = useState([]);
+  const [datas, setDatas] = useState<CandidateData[]>([]);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -113,6 +120,7 @@ async function getData() {
   }
 }
 
+// Fonction supprimée car non utilisée
 // async function formatCardData() {
 //   const data = await getData();
 //   return [

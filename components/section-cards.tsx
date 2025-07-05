@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export function SectionCards(card) {
+export function SectionCards() {
   const cards = [
     {
       title: "Total CV",
@@ -35,13 +35,13 @@ export function SectionCards(card) {
     },
   ];
 
-  const getTagIcon = (tag) => {
+  const getTagIcon = (tag: number) => {
     if (tag > 0) return <IconTrendingUp className="size-4" />;
     if (tag < 0) return <IconTrendingDown className="size-4" />;
     return null;
   };
 
-  const getTagDisplay = (tag) => {
+  const getTagDisplay = (tag: number) => {
     if (tag > 0) return `+${tag}%`;
     if (tag < 0) return `${tag}%`;
     return `${tag}%`;
@@ -66,7 +66,7 @@ export function SectionCards(card) {
           <CardFooter className="flex-col items-start gap-1.5 text-sm">
             <div className="line-clamp-1 flex gap-2 font-medium">
               {card.description_tag}{" "}
-              {getTagIcon(card.tag) !== "%" && (
+              {getTagIcon(card.tag) && (
                 <span className="size-4">{getTagIcon(card.tag)}</span>
               )}
             </div>
