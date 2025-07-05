@@ -9,7 +9,7 @@ import { AgGridReact } from "ag-grid-react";
 import { useEffect, useState } from "react";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = "/api/proxy";
 
 interface CandidateData {
   candidat: string;
@@ -94,42 +94,48 @@ async function getToken() {
       password: "stagestage",
     }),
   };
-  const url: string = API_BASE_URL + "token";
+
+  const url: string = `${API_BASE_URL}/token`;
+
   try {
     const rep: Response = await fetch(url, params);
 
     if (!rep.ok) {
-      throw new Error("Erreur OK dans la requête getToken");
+      throw new Error(`Erreur HTTP ${rep.status}: ${rep.statusText}`);
     }
-    return await rep.json();
+
+    const result = await rep.json();
+    return result;
   } catch (error) {
     throw new Error("Erreur dans la requête getToken" + error);
   }
 }
 
 async function getData() {
-  const token = await getToken();
-
-  const params = {
-    method: "GET",
-    headers: {
-      Authorization: "Bearer " + token["access_token"],
-    },
-  };
-  const url: string =
-    API_BASE_URL +
-    "cv_analyzer_2?deal_id=1&accepted=false&all=false&archived=true";
   try {
+    const token = await getToken();
+
+    const params = {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + token["access_token"],
+      },
+    };
+
+    const url: string = `${API_BASE_URL}/cv_analyzer_2?deal_id=1&accepted=false&all=false&archived=true`;
+
     const rep: Response = await fetch(url, params);
 
     if (!rep.ok) {
-      throw new Error("Erreur OK dans la requête getData");
+      throw new Error(`Erreur HTTP ${rep.status}: ${rep.statusText}`);
     }
 
     const data = await rep.json();
+    console.log("Données reçues:", data);
     return data["data"];
   } catch (error) {
-    throw new Error("catch error getData" + error);
+    console.error("Erreur dans getData:", error);
+    throw new Error("Erreur getData: " + error);
   }
 }
 interface Candidat {
