@@ -19,14 +19,21 @@ interface CandidateData {
   phone: string;
   final_decision: string;
 }
+interface Candidat {
+  id: number;
+  candidat: string;
+  final_decision: string;
+  date: string;
+  campaign_name: string;
+}
 
 export default function Page() {
   const columnDefs: ColDef[] = [
-    { field: "candidat" },
+    { field: "candidat", filter: "agTextColumnFilter" },
     { field: "score" },
     { field: "date" },
-    { field: "email" },
-    { field: "phone" },
+    { field: "email", filter: "agTextColumnFilter" },
+    { field: "phone", filter: "agTextColumnFilter" },
     { field: "final_decision" },
   ];
   type Card = {
@@ -61,7 +68,7 @@ export default function Page() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
               <SectionCards cards={cards} />
-              <div className="w-full h-[35vw] max-h-[600px] flex items-center justify-center overflow-auto px-6 sm:h-[500px] md:h-[600px] lg:h-[700px]">
+              <div className="w-full h-[35vw] max-h-[600px] flex items-center justify-center overflow-auto px-6  lg:h-[700px]">
                 <div className="w-full h-full">
                   <AgGridReact
                     className="w-full h-full"
@@ -83,15 +90,19 @@ export default function Page() {
 }
 
 async function getToken() {
+  const grantTypeAPI = process.env.NEXT_PUBLIC_GRANT_TYPE;
+  const passwordAPI = process.env.NEXT_PUBLIC_API_PASSWORD;
+  const usernameAPI = process.env.NEXT_PUBLIC_API_USERNAME;
+
   const params: RequestInit = {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: new URLSearchParams({
-      grant_type: "password",
-      username: "stage@rocket4sales.com",
-      password: "stagestage",
+      grant_type: grantTypeAPI ?? "",
+      username: usernameAPI ?? "",
+      password: passwordAPI ?? "",
     }),
   };
 
@@ -118,7 +129,7 @@ async function getData() {
     const params = {
       method: "GET",
       headers: {
-        Authorization: "Bearer " + token["access_token"],
+        Authorization: token["token_type"] + " " + token["access_token"],
       },
     };
 
@@ -137,13 +148,6 @@ async function getData() {
     console.error("Erreur dans getData:", error);
     throw new Error("Erreur getData: " + error);
   }
-}
-interface Candidat {
-  id: number;
-  candidat: string;
-  final_decision: string;
-  date: string;
-  campaign_name: string;
 }
 
 async function formatCardData() {

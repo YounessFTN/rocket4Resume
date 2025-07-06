@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/proxy/:path*",
-        destination: process.env.NEXT_PUBLIC_API_BASE_URL + "/:path*", // Ajouter le slash
+        destination: process.env.NEXT_PUBLIC_API_BASE_URL + "/:path*",
       },
     ];
   },
